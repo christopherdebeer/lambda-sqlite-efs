@@ -1,0 +1,43 @@
+name: Deploy API
+on:
+    push:
+        branches:
+            - "master"
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
+    
+
+permissions:
+    id-token: write # AWS OIDC
+    contents: read # Checkout
+
+jobs:
+    deploy-api:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: "18"
+
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v3
+              with:
+                  role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_NUMBER }}:role/github-oidc-role
+                  aws-region: eu-west-1
+            - name: Check out repository code
+              uses: actions/checkout@v3
+
+            - name: Bootstrap CDK
+              run: |
+                  npm install -g aws-cdk
+                  cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_NUMBER }}/${{ secrets.AWS_REGION }}
+
+
+            - name: Deploy API
+              run: cdk deploy
+              env:
+                  AWS_REGION: ${{ secrets.AWS_REGION }}
+                  AWS_ACCOUNT_NUMBER: ${{ secrets.AWS_ACCOUNT_NUMBER }}
