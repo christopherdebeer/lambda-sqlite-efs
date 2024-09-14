@@ -2,6 +2,7 @@
 import * as cdk from "aws-cdk-lib";
 import "source-map-support/register";
 import { LambdaSqliteEfsStack } from "../lib/lambda-sqlite-efs-stack";
+const process = require("process");
 
 const app = new cdk.App();
 new LambdaSqliteEfsStack(app, "LambdaSqliteEfsStack", {
