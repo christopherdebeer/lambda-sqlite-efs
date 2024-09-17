@@ -9,7 +9,9 @@ export class LambdaSqliteEfsStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = new Vpc(this, "api-vpc", {
-      natGateways: 0
+      natGateways: 0,
+      maxAzs: 1,
+      createInternetGateway: false,
     });
     // The code that defines your stack goes here
 
