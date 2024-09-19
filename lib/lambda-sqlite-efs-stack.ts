@@ -7,50 +7,50 @@ import { Construct } from "constructs";
 import * as path from "path";
 
 export class LambdaSqliteEfsStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
 
-    const vpc = new Vpc(this, "api-vpc", {
-      natGateways: 0,
-      maxAzs: 1,
-      createInternetGateway: false,
-    });
-    // The code that defines your stack goes here
+        const vpc = new Vpc(this, "api-vpc", {
+            natGateways: 0,
+            maxAzs: 1,
+            createInternetGateway: false,
+        });
+        // The code that defines your stack goes here
 
-    const EFS_PATH = "/mnt/lambda";
+        const EFS_PATH = "/mnt/lambda";
 
-    const dataBaseEFS = new efs.FileSystem(this, "db-file-system", {
-      vpc,
-    });
+        const dataBaseEFS = new efs.FileSystem(this, "db-file-system", {
+            vpc,
+        });
 
-    const accessPoint = dataBaseEFS.addAccessPoint("EfsAccessPoint", {
-      createAcl: {
-        ownerGid: "1001",
-        ownerUid: "1001",
-        permissions: "750",
-      },
-      path: "/lambda",
-      posixUser: {
-        gid: "1001",
-        uid: "1001",
-      },
-    });
+        const accessPoint = dataBaseEFS.addAccessPoint("EfsAccessPoint", {
+            createAcl: {
+                ownerGid: "1001",
+                ownerUid: "1001",
+                permissions: "750",
+            },
+            path: "/lambda",
+            posixUser: {
+                gid: "1001",
+                uid: "1001",
+            },
+        });
 
-    new lambda_nodejs.NodejsFunction(this, "api-function", {
-      vpc,
-      filesystem: lambda.FileSystem.fromEfsAccessPoint(
-        accessPoint,
-        EFS_PATH
-      ),
-      environment: {
-        EFS_PATH: EFS_PATH,
-      },
-      handler: "index.handler",
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      entry: path.join(__dirname, "../lib/lambda/index.ts"),
-      bundling: {
-        nodeModules: ["better-sqlite3"]
-      }
-    });
-  }
+        new lambda_nodejs.NodejsFunction(this, "api-function", {
+            vpc,
+            filesystem: lambda.FileSystem.fromEfsAccessPoint(
+                accessPoint,
+                EFS_PATH
+            ),
+            environment: {
+                EFS_PATH: EFS_PATH,
+            },
+            handler: "index.handler",
+            runtime: lambda.Runtime.NODEJS_LATEST,
+            entry: path.join(__dirname, "../lib/lambda/index.ts"),
+            bundling: {
+                externalModules: ["better-sqlite3"],
+            },
+        });
+    }
 }
