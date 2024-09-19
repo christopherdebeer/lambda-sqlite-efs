@@ -1,11 +1,32 @@
-import * as fs from "node:fs";
-
+import Database = require("better-sqlite3");
 const EFS_PATH = process.env.EFS_PATH;
 
-export const handler = (event: any) => {
-  console.log("Hello World! ", {event});
-//   fs.writeFileSync(EFS_PATH + "/123.txt", "1\n2\n3");
-    const file = fs.readFileSync(EFS_PATH + "/123.txt", "utf8");
+const db = new Database(EFS_PATH + "/lambda-efs.db", {});
 
-    console.log(JSON.stringify({file}));
+export const handler = (event: any) => {
+    bootstrap();
+
+    const users = getUsers();
+
+    console.log(JSON.stringify({users}));
+    db.exec("");
 };
+
+function bootstrap() {
+    console.log("Bootstrapping function");
+    setupDB();
+}
+
+function setupDB() {
+    console.log("Setting up DB");
+    
+    db.prepare(
+        "create table if not exists users (name TEXT, age INTEGER)"
+    ).run();
+
+    db.exec("INSERT into users (name, age) VALUES ('Estian Yssel', 27)");
+}
+
+function getUsers() {
+    return db.prepare("SELECT * FROM users").get();
+}
