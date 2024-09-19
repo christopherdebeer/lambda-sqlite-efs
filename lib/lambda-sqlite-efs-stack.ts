@@ -49,7 +49,7 @@ export class LambdaSqliteEfsStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_LATEST,
       entry: path.join(__dirname, "../lib/lambda/index.ts"),
       bundling: {
-        externalModules: ["better-sqlite3"]
+        nodeModules: ["better-sqlite3"]
       }
     });
   }
