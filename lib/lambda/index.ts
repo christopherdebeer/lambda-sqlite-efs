@@ -3,13 +3,14 @@ const EFS_PATH = process.env.EFS_PATH;
 
 const db = new Database(EFS_PATH + "/lambda-efs.db", {});
 
-export const handler = (event: any) => {
+export const handler = async (event: any) => {
+    console.log(JSON.stringify({ event }));
+
     bootstrap();
 
     const users = getUsers();
 
-    console.log(JSON.stringify({users}));
-    db.exec("");
+    console.log(JSON.stringify({ users }));
 };
 
 function bootstrap() {
@@ -19,7 +20,7 @@ function bootstrap() {
 
 function setupDB() {
     console.log("Setting up DB");
-    
+
     db.prepare(
         "create table if not exists users (name TEXT, age INTEGER)"
     ).run();
