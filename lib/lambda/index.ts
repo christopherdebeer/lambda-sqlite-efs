@@ -8,6 +8,8 @@ export const handler = async (event: any) => {
 
     bootstrap();
 
+    createUser(event.name, event.age);
+
     const users = getUsers();
 
     console.log(JSON.stringify({ users }));
@@ -24,8 +26,10 @@ function setupDB() {
     db.prepare(
         "create table if not exists users (name TEXT, age INTEGER)"
     ).run();
+}
 
-    db.exec("INSERT into users (name, age) VALUES ('Estian Yssel', 27)");
+function createUser(name: string, age: number) {
+    db.exec(`INSERT into users (name, age) VALUES ('${name}', ${age})`);
 }
 
 function getUsers() {
