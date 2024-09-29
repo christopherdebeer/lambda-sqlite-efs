@@ -33,5 +33,5 @@ function createUser(name: string, age: number) {
 }
 
 function getUsers() {
-    return db.prepare("SELECT * FROM users").get();
+    return db.prepare("SELECT * FROM users").run();
 }
