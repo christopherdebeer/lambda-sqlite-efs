@@ -29,7 +29,7 @@ function setupDB() {
 }
 
 function createUser(name: string, age: number) {
-    db.exec(`INSERT into users (name, age) VALUES ('${name}', ${age})`);
+    db.prepare(`INSERT into users (name, age) VALUES ('${name}', ${age})`).run();
 }
 
 function getUsers() {
