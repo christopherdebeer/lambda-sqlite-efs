@@ -2,7 +2,7 @@ name: Deploy API
 on:
   push:
     branches:
-      - "master"
+      - "*"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
