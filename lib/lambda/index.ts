@@ -24,7 +24,7 @@ function setupDB() {
     console.log("Setting up DB");
 
     db.prepare(
-        "create table if not exists users (name TEXT, age INTEGER)"
+        "CREATE TABLE IF NOT EXISTS users (name TEXT, age INTEGER)"
     ).run();
 }
 
