@@ -17,6 +17,7 @@ export class LambdaSqliteEfsStack extends cdk.Stack {
         });
 
         const EFS_PATH = "/lambda";
+        const MNT_EFS_PATH = `/mnt/${EFS_PATH}`;
 
         const dataBaseEFS = new efs.FileSystem(this, "db-file-system", {
             vpc,
@@ -28,7 +29,7 @@ export class LambdaSqliteEfsStack extends cdk.Stack {
                 ownerUid: "1001",
                 permissions: "750",
             },
-            path: "/lambda",
+            path: EFS_PATH,
             posixUser: {
                 gid: "1001",
                 uid: "1001",
@@ -39,10 +40,10 @@ export class LambdaSqliteEfsStack extends cdk.Stack {
             vpc,
             filesystem: lambda.FileSystem.fromEfsAccessPoint(
                 accessPoint,
-                EFS_PATH
+                MNT_EFS_PATH
             ),
             environment: {
-                EFS_PATH: `/mnt/${EFS_PATH}`,
+                EFS_PATH: MNT_EFS_PATH,
             },
             handler: "index.handler",
             runtime: lambda.Runtime.NODEJS_20_X,
