@@ -15,9 +15,8 @@ export class LambdaSqliteEfsStack extends cdk.Stack {
             maxAzs: 1,
             createInternetGateway: false,
         });
-        // The code that defines your stack goes here
 
-        const EFS_PATH = "/mnt/lambda";
+        const EFS_PATH = "/lambda";
 
         const dataBaseEFS = new efs.FileSystem(this, "db-file-system", {
             vpc,
@@ -43,13 +42,13 @@ export class LambdaSqliteEfsStack extends cdk.Stack {
                 EFS_PATH
             ),
             environment: {
-                EFS_PATH: EFS_PATH,
+                EFS_PATH: `/mnt/${EFS_PATH}`,
             },
             handler: "index.handler",
             runtime: lambda.Runtime.NODEJS_20_X,
             entry: path.join(__dirname, "../lib/lambda/index.ts"),
             bundling: {
-                nodeModules: ["better-sqlite3", "cjs-loader", "bindings"],
+                nodeModules: ["better-sqlite3"],
             },
         });
     }
