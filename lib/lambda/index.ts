@@ -1,37 +1,34 @@
 import Database = require("better-sqlite3");
-const EFS_PATH = process.env.EFS_PATH;
 
-const db = new Database(EFS_PATH + "/lambda-efs.db", {});
+const token = process.env.AUTH_TOKEN;
 
 export const handler = async (event: any) => {
     console.log(JSON.stringify({ event }));
+    if (!token || event.token !=== token) {
+        return {
+            statusCode: 401,
+        }
+    }
+    const db = bootstrap(event.db || "default");
 
-    bootstrap();
+    const result = await db.prepare(event.sql).run()
 
-    createUser(event.name, event.age);
-
-    const users = getUsers();
-
-    console.log(JSON.stringify({ users }));
+    return result;
 };
 
-function bootstrap() {
+function bootstrap(token: string) {
     console.log("Bootstrapping function");
-    setupDB();
+    return setupDB(token);
 }
 
-function setupDB() {
+function setupDB(token: string) {
     console.log("Setting up DB");
 
-    db.prepare(
-        "CREATE TABLE IF NOT EXISTS users (name TEXT, age INTEGER)"
-    ).run();
-}
+    // db.prepare(
+    //  "CREATE TABLE IF NOT EXISTS tokens (token TEXT)"
+    //).run();
+    const EFS_PATH = process.env.EFS_PATH;
 
-function createUser(name: string, age: number) {
-    db.prepare(`INSERT INTO users (name, age) VALUES ('${name}', ${age})`).run();
-}
-
-function getUsers() {
-    return db.prepare("SELECT * FROM users").all();
+const db = new Database(EFS_PATH + `/${token}.db`, {});
+    return db;
 }
