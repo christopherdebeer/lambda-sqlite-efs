@@ -4,7 +4,7 @@ const token = process.env.AUTH_TOKEN;
 
 export const handler = async (event: any) => {
     console.log(JSON.stringify({ event }));
-    if (!token || event.token !=== token) {
+    if (!token || event.token !== token) {
         return {
             statusCode: 401,
         }
